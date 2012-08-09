@@ -1,0 +1,18 @@
+html body section#code_viewer {
+  background: #ffffff;
+  border: solid 1px #dddddd;
+  padding: 1em
+}
+
+html body section#code_viewer nav {
+  font-family: monospace;
+}
+
+html body section#code_viewer>div {
+  display: none;
+  padding: 0 1em;
+}
+
+html body section#code_viewer>div.views {
+  display: block;
+}
