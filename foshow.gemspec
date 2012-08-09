@@ -51,7 +51,7 @@ Gem::Specification.new do |s|
   ## s.add_development_dependency('DEVDEPNAME', [">= 1.1.0", "< 2.0.0"])
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'
-  s.add_development_dependency 'ruby-debug19'
+  s.add_development_dependency 'pry'
 
   ## Leave this section as-is. It will be automatically generated from the
   ## contents of your Git repository via the gemspec task. DO NOT REMOVE

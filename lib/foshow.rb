@@ -1,70 +1,83 @@
+require 'ostruct'
+require 'singleton'
 class Foshow
+
+  include Singleton
 
   VERSION = "0.0.0"
 
-  attr_accessor :renderer, :defaults, :configuration
-  delegate :action_name, :controller_name, :content_tag, :link_to, to: :renderer
+  attr_accessor :views, :renderer
 
   def self.configure(&block)
-    @fo = new
-    @fo.configuration = block.call
+    yield instance.config
+  end
+
+  def config
+    @config ||= OpenStruct.new
   end
 
   def self.render(renderer)
-    @fo.renderer = renderer
-    @fo.render
+    instance.renderer = renderer
+    instance.render
   end
 
-  def render
-    content_tag(:section, id: 'code_viewer') do
-      build_navigation + build_elements
-    end.html_safe
+   def render
+     renderer.content_tag(:section, id: 'code_viewer') do
+       build_navigation + build_elements
+     end.html_safe
+   end
+
+  private
+
+  def show_keys
+    @show_keys ||= config.marshal_dump.keys | defaults.marshal_dump.keys
   end
 
   def build_navigation
-    content_tag(:nav) do
+    renderer.content_tag(:nav) do
       "".tap do |html_container|
         show_keys.each do |name|
-          html_container << " #{link_to(name, '#', class: name)}"
+          html_container << " #{renderer.link_to(name, '#', class: name)}"
         end
       end.html_safe
     end
   end
 
+
+  def defaults
+    @defaults ||= OpenStruct.new({
+      views: ["app/views/#{renderer.controller_name}/#{renderer.action_name}.html.haml"],
+      controllers: ["app/controllers/#{renderer.controller_name}_controller.rb"],
+      model: ["app/models/#{renderer.controller_name.singularize}.rb"],
+      all: []
+    })
+  end
+
   def build_elements
     "".tap do |html_container|
       show_keys.each do |key|
-        html_container << content_tag(:div, class: "#{key.to_s}") { show_code(defaults[key] || []).html_safe }
-        html_container << content_tag(:div, class: "#{key.to_s}") { show_code(config_directories(key) || []).html_safe }
+        html_container << renderer.content_tag(:div, class: "#{key.to_s}") { show_code(defaults.send(key) || []).html_safe }
+        html_container << renderer.content_tag(:div, class: "#{key.to_s}") { show_code(config_directories(key) || []).html_safe }
       end
     end.html_safe
   end
 
-  def config_directories(key)
-    if configuration[key].is_a?(Hash)
-      configuration[key]["#{controller_name}##{action_name}"] || []
-    else
-      configuration[key]
+  def show_code(file_array, lang=:ruby)
+    files = file_array.flatten
+    "".tap do |html_string|
+      files.each do |file|
+        html_string << highlighted_code(file)
+      end
     end
   end
 
-  def show_keys
-    @show_keys ||= configuration.keys | defaults.keys
-  end
-
-  def defaults
-    @default ||= {
-      views: ["app/views/#{controller_name}/#{action_name}.html.haml"],
-      controllers: ["app/controllers/#{controller_name}_controller.rb"],
-      model: ["app/models/#{controller_name.singularize}.rb"],
-      all: []
-    }
-  end
-
-  def show_code(file_array, lang=:ruby)
-    "".tap do |html_string|
-      file_array.flatten.each do |file|
-        html_string << highlighted_code(file)
+  def config_directories(key)
+    pages = config.send(key) || []
+    a = pages.compact.map do |page|
+      if page.is_a?(Hash)
+        page["#{renderer.controller_name}##{renderer.action_name}"] || []
+      else
+        page
       end
     end
   end
@@ -74,6 +87,7 @@ class Foshow
   end
 
   def code_string(file)
+    puts file
     read_file(file)
   end
 
