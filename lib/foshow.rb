@@ -1,5 +1,6 @@
 require 'ostruct'
 require 'singleton'
+
 class Foshow
 
   include Singleton
@@ -12,20 +13,20 @@ class Foshow
     yield instance.config
   end
 
-  def config
-    @config ||= OpenStruct.new
-  end
-
   def self.render(renderer)
     instance.renderer = renderer
     instance.render
   end
 
-   def render
-     renderer.content_tag(:section, id: 'code_viewer') do
-       build_navigation + build_elements
-     end.html_safe
-   end
+  def config
+    @config ||= OpenStruct.new
+  end
+
+  def render
+    renderer.content_tag(:section, id: 'code_viewer') do
+      build_navigation + build_elements
+    end.html_safe
+  end
 
   private
 
