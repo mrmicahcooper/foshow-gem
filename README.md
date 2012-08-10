@@ -19,38 +19,44 @@ Or install it yourself as:
 
     $ gem install foshow
 
+Then install the javascript and css files to make it look a little better:
+
+    $ rails generate foshow:install
+
 ## Usage
 
 ###Default - Rails conventions
-This gem only works with rails apps and assumes you are following rails basing MVC naming conventions.
+This gem only works with rails apps and assumes you are following rails basic MVC naming conventions.
 For example, a model named "user" has a controller named "app/controllers/users_controller.rb" and a view directory called "app/views/users/"
 
-All you have to do is add this to your application layout ('apps/views/layouts/application.html.erb').
+All you have to do is add this to (the bottom of) your application layout ('apps/views/layouts/application.html.haml').
+
+    # Add to 'app/views/layouts/application.haml'
 
     Foshow.render(self)
 
-This, by default, displays the code for the model, view, and controller of the resource you're viewing.
+
+
+This, by default, displays the code for the model, view, and controller of the resource you're viewing so long as they exist.
 
 ###Configurating beyond the defaults
 If you want to display more code for a page, do it here: 'config/initializers/foshow.rb'
 
-To display more code for a resource(page) configure Foshow with a Hash.
+To display more code for a resource(page) configure Foshow with a block.
 
-The keys of this hash can be: models, views, controllers, javascripts, helpers
+It's kinda like your routes file. Observe:
 
-The values of these keys can be a Hash or an Array. It's kinda like your routes file. Observe:
+	# Use a Hash to specify what controller#action will display the files given.
+	# Use just an Array to make the files display on all controller#actions.
 
-	#Use a Hash to specify what controller#action will display the files given.
-	#Use just an Array to make the files display on all controller#actions.
-
-	Foshow.configure do
-		{
-			views: { 'controller#action_name' => ['app/views/controller/other_file_name.html.erb']}
-			javascripts: ['app/assets/javascripts/global.js']
-		}
+	Foshow.configure do |config|
+		config.views = { 'controller#action_name' => ['app/views/controller/other_file_name.html.erb']}
+		config.javascripts = ['app/assets/javascripts/global.js']
 	end
 
-__note__: The file paths must always be in an array. They will not render otherwise
+	# the methods called on config will become links to display that section in your application layout.
+
+__note__: The file paths must always be in an array. They will not render otherwise.
 
 ## Contributing
 
@@ -59,3 +65,9 @@ __note__: The file paths must always be in an array. They will not render otherw
 3. Commit your changes (`git commit -am 'Added some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+##To do
+- Add more tests
+
+##Thank you
+shayarnett
