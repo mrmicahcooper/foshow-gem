@@ -93,7 +93,11 @@ class Foshow
   end
 
   def read_file(file)
-    File.read(file)
+    begin
+      File.read(file)
+    rescue Errno::ENOENT
+      "not found"
+    end
   end
 
   def file_extension(file)
