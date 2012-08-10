@@ -44,7 +44,7 @@ Gem::Specification.new do |s|
   ## List your runtime dependencies here. Runtime dependencies are those
   ## that are needed for an end user to actually USE your code.
   ## s.add_dependency('DEPNAME', [">= 1.1.0", "< 2.0.0"])
-  s.add_dependency 'coderay', ["1.0.6"]
+  s.add_dependency 'coderay'
 
   ## List your development dependencies here. Development dependencies are
   ## those that are only needed during development
